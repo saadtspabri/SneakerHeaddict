@@ -49,7 +49,7 @@ class AppFixtures extends Fixture
        
         // $product = new Product();
         // $manager->persist($product);
-        foreach (self::SneakersDataGenerator() as [$model, $color, [$name,$location]] )
+        foreach (self::SneakersDataGenerator() as [ $model, $color, [$name,$location] ] )
         {
             $showroom = $showroomRepo->findOneBy(['name' => $name, 'location' => $location]);
             $sneaker = new Sneaker();
