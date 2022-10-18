@@ -24,7 +24,7 @@ class ShowroomController extends AbstractController
     *[Route('/showroom', name: 'app_showroom')]
     */
     
-    public function indexSneakers(): Response
+    public function indexShowroom(): Response
     {
         $htmlpage = '<!DOCTYPE html>
 <html>
@@ -65,20 +65,24 @@ class ShowroomController extends AbstractController
     <body>
         <h1>Showroom list</h1>
         <p>Voici les la liste des showrooms:</p>
-        <li><a href="/showroom/42">un showroom (42)</a></li>
         <ul>';
         
         $entityManager= $doctrine->getManager();
         $showrooms = $entityManager->getRepository(Showroom::class)->findAll();
+        
+       /*  #Méthode de URL 'à la main'
         foreach($showrooms as $showroom) {
             $htmlpage .= '<li>
-            <a href="/todo/'.$showroom->getid().'">'.$showroom->getName().'</a></li>';
+            <a href="/showroom/'.$showroom->getid().'">'.$showroom->getName().'</a></li>';
+        }        
+        */
+        
+        #Méthode de URL via le générateur
+        foreach($showrooms as $showroom) {
+        $htmlpage .= '<li><a href='.$this->generateUrl( 'showroom_show',    ['id' => $showroom->getId() ] ).'>'.$showroom->getName().'</a></li>';
         }
         $htmlpage .= '</ul>';
-        
         $htmlpage .= '</body></html>';
-        $url = $this->generateUrl( '[inventaire]_show',    ['id' => $showroom->getId()] );
-        
         
         return new Response(
             $htmlpage,
@@ -95,7 +99,7 @@ class ShowroomController extends AbstractController
      *
      * @param Integer $id
      */
-    public function showInventaire(ManagerRegistry $doctrine, $id): Response
+    public function showShowroom(ManagerRegistry $doctrine, $id): Response
     {
         
         $showroomrepo = $doctrine->getRepository(Showroom::class);
@@ -109,21 +113,19 @@ class ShowroomController extends AbstractController
         <html>
             <head>
                 <meta charset="UTF-8">
-                <title>Showroom :'.$showroom->getName().' details</title>
+                <title>'.$showroom->getName().' details</title>
             </head>
         <body>
             <h2>Sneakers Details :</h2>
             <ul>
-            <dl>    
-        <dt>Sneaker</dt>';
+            <dl>Sneaker';
         $sneakers = $showroom->getRelation();
         foreach ($sneakers as $sneaker)
             {
-        $res .= '<dt></dt><dd>' . $sneaker->getModel() .' '. $sneaker->getColor() . '</dd>'; 
-        $res .= '</dl>';
-        $res .= '</ul></body></html>';
-        $res .= '<p/><a href="' . $this->generateUrl('showroom_show', array('slug' => 'showroom')) . '">Back</a>';
+                $res .= '<dt><dd>' . $sneaker->getModel() .' '. $sneaker->getColor() .' <a href="/sneaker/'.$sneaker->getid().'">'.$sneaker->getId().'</a></dd></dt>';
             }
+            $res .= '</dl>';
+            $res .= '</ul></body></html>';
         return new Response('<html><body>'. $res . '</body></html>');
     }
     
